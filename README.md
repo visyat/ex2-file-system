@@ -12,8 +12,8 @@ make
 Run the following commands to run the executable and mount the resulting file system image. 
 ```
 ./ext2-create
-dumpe2fs cs111 -base.img
-fsck.ext2 cs111 -base.img
+dumpe2fs cs111-base.img
+fsck.ext2 cs111-base.img
 mkdir mnt
 sudo mount -o loop cs111 -base.img mnt
 ```

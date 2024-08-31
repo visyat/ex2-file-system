@@ -212,7 +212,7 @@ void write_superblock(int fd) {
 	superblock.s_mtime 				= 0;					/* Mount time */
 	superblock.s_wtime 				= current_time;			/* Write time */
 	superblock.s_mnt_count         	= 0; 					/* Number of times mounted so far */
-	superblock.s_max_mnt_count     	= 0; 					/* Make this unlimited */
+	superblock.s_max_mnt_count     	= -1; 					/* Make this unlimited */
 	superblock.s_magic 				= EXT2_SUPER_MAGIC; 	/* ext2 Signature */
 	superblock.s_state             	= 1; 					// should be EXT2_VALID_FS /* File system is clean */
 	superblock.s_errors            	= 1; 					// should be EXT2_ERRORS_CONTINUE /* Ignore the error (continue on) */
@@ -285,11 +285,11 @@ void write_block_bitmap(int fd)
 	map_value[0] = 0b11111111; // 1-8
 	map_value[1] = 0b11111111; // 9-16
 	map_value[2] = 0b01111111; // 17-24
-	for (u32 i = 3; i < 128; i++) { // 25-1016
+	for (u32 i = 3; i < 127; i++) { // 25-1016
 		map_value[i] = 0b00000000;
 	}
-	map_value[128] = 0b10000000; // 1017-1024
-	for (u32 i = 129; i < BLOCK_SIZE; i++) { // 1025+
+	map_value[127] = 0b10000000; // 1017-1024
+	for (u32 i = 128; i < BLOCK_SIZE; i++) { // 1025+
 		map_value[i] = 0b11111111;
 	}
 
@@ -404,7 +404,7 @@ void write_inode_table(int fd) {
 	hello_world_inode.i_dtime = 0;
 	hello_world_inode.i_gid = 1000;
 	hello_world_inode.i_links_count = 1;
-	hello_world_inode.i_blocks = 1; /* These are oddly 512 blocks */
+	hello_world_inode.i_blocks = 2; /* These are oddly 512 blocks */
 	hello_world_inode.i_block[0] = HELLO_WORLD_FILE_BLOCKNO;
 	write_inode(fd, HELLO_WORLD_INO, &hello_world_inode);
 
@@ -426,7 +426,7 @@ void write_inode_table(int fd) {
 	hello_inode.i_blocks = 0; /* These are oddly 512 blocks */
 	memcpy(hello_inode.i_block, "hello-world", hello_inode.i_size); // store path to hello-world in i_block
 	// hello_inode.i_block[0] = // update block to symlink based on instructions
-	write_inode(fd, HELLO_INO, &root_inode);
+	write_inode(fd, HELLO_INO, &hello_inode);
 
 }
 
